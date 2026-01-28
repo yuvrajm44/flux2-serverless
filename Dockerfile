@@ -23,6 +23,6 @@ RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
 COPY . .
 
 # Download models at build time
-RUN python download_models.py
+#RUN python download_models.py
 
 CMD ["python", "-u", "runpod_handler.py"]
