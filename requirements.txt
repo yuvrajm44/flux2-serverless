@@ -1,0 +1,8 @@
+runpod
+diffusers
+transformers
+accelerate
+optimum-quanto
+pillow
+safetensors
+huggingface-hub
