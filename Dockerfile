@@ -5,15 +5,14 @@ WORKDIR /app
 # Install git
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
+# Copy both requirements.txt AND constraints.txt
+COPY requirements.txt constraints.txt ./
 
-# Install Python dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install with constraints to lock torch/torchvision versions
+RUN pip install --no-cache-dir -c constraints.txt -r requirements.txt
+
 # VERIFY transformers
 RUN python -c "import transformers; print('Transformers:', transformers.__version__); from transformers import AutoProcessor; print('✓ AutoProcessor imported successfully')"
-
-# FORCE upgrade transformers (critical - base image has old version)
-RUN pip install --no-cache-dir --upgrade --force-reinstall "transformers>=4.55.0"
 
 # Copy SimpleTuner code (DON'T pip install - avoids skrample dependency)
 RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
