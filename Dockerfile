@@ -9,17 +9,17 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install SimpleTuner
+# Clone SimpleTuner but DON'T install it - just copy the needed modules
 RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
-    cd /tmp/SimpleTuner && \
-    pip install --no-cache-dir -e ".[cuda]" && \
-    rm -rf /tmp/SimpleTuner/.git
+    mkdir -p /app/simpletuner && \
+    cp -r /tmp/SimpleTuner/helpers /app/simpletuner/ && \
+    touch /app/simpletuner/__init__.py && \
+    rm -rf /tmp/SimpleTuner
 
-# Copy code
+# Copy application files
 COPY . .
 
-# Download base models (FLUX 2 + Mistral)
+# Download models during build
 RUN python download_models.py
 
-# Start handler
 CMD ["python", "-u", "runpod_handler.py"]

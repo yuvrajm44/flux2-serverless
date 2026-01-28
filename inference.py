@@ -3,6 +3,11 @@ from transformers import AutoProcessor, Mistral3ForConditionalGeneration
 from diffusers import FlowMatchEulerDiscreteScheduler
 from optimum.quanto import freeze, qint8, quantize
 
+# Add /app to path FIRST
+import sys
+sys.path.insert(0, '/app')
+
+# THEN import SimpleTuner modules
 from simpletuner.helpers.models.flux2.pipeline import Flux2Pipeline
 from simpletuner.helpers.models.flux2.transformer import Flux2Transformer2DModel
 from simpletuner.helpers.models.flux2.autoencoder import AutoencoderKLFlux2

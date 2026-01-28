@@ -1,5 +1,9 @@
 from transformers import AutoProcessor, Mistral3ForConditionalGeneration
 from diffusers import FlowMatchEulerDiscreteScheduler
+
+import sys
+sys.path.insert(0, '/app')
+
 from simpletuner.helpers.models.flux2.transformer import Flux2Transformer2DModel
 from simpletuner.helpers.models.flux2.autoencoder import AutoencoderKLFlux2
 
