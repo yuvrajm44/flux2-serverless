@@ -9,6 +9,8 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 # Install Python dependencies
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+# VERIFY transformers
+RUN python -c "import transformers; print('Transformers:', transformers.__version__); from transformers import AutoProcessor; print('✓ AutoProcessor imported successfully')"
 
 # FORCE upgrade transformers (critical - base image has old version)
 RUN pip install --no-cache-dir --upgrade --force-reinstall "transformers>=4.55.0"
