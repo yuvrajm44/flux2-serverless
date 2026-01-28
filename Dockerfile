@@ -9,12 +9,10 @@ RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Clone and install SimpleTuner with CUDA support (like your RunPod setup)
+# Copy SimpleTuner code (DON'T pip install - avoids skrample dependency)
 RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
-    cd /tmp/SimpleTuner && \
-    pip install -e ".[cuda]" && \
-    pip install gdown && \
-    cd /app
+    cp -r /tmp/SimpleTuner/simpletuner /app/ && \
+    rm -rf /tmp/SimpleTuner
 
 # Copy application code
 COPY . .

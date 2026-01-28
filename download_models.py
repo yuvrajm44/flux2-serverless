@@ -6,6 +6,7 @@ sys.path.insert(0, '/app')
 
 from simpletuner.helpers.models.flux2.transformer import Flux2Transformer2DModel
 from simpletuner.helpers.models.flux2.autoencoder import AutoencoderKLFlux2
+from simpletuner.helpers.models.flux2.pipeline import Flux2Pipeline
 
 print("Downloading FLUX 2 models...")
 model_path = "black-forest-labs/FLUX.2-dev"
