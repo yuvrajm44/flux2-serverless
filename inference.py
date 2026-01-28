@@ -3,6 +3,7 @@ from transformers import AutoProcessor, Mistral3ForConditionalGeneration
 from diffusers import FlowMatchEulerDiscreteScheduler
 from optimum.quanto import freeze, qint8, quantize
 import os
+from huggingface_hub import hf_hub_download
 
 # Add /app to path FIRST
 import sys
@@ -40,7 +41,13 @@ def load_models():
     
     model_path = "black-forest-labs/FLUX.2-dev"
     mistral_path = "mistralai/Mistral-Small-3.1-24B-Instruct-2503"
-    lora_path = "/app/models/pytorch_lora_weights.safetensors"
+    print("Downloading LoRA from HuggingFace...")
+    lora_path = hf_hub_download(
+        repo_id="michealscott/flux2-3030",
+        filename="pytorch_lora_weights.safetensors",
+        token=hf_token
+    )
+    print(f"LoRA downloaded to: {lora_path}")
     
     # Load VAE
     print("Loading VAE...")
