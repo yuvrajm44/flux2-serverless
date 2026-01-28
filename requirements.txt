@@ -1,8 +1,11 @@
 runpod
-diffusers
-transformers
-accelerate
+torch>=2.0.0
+diffusers>=0.36.0
+transformers>=4.47.0
+accelerate>=1.5.0
 optimum-quanto
-pillow
-safetensors
-huggingface-hub
+pillow>=11.0.0
+safetensors>=0.5.0
+huggingface-hub>=0.26.0git add .
+git commit -m "Copy SimpleTuner files to avoid skrample PyPI dependency issue"
+git push origin master
