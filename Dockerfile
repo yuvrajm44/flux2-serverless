@@ -2,8 +2,13 @@ FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
 
 WORKDIR /app
 
-# Install git
-RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
+# Install git AND git-lfs
+RUN apt-get update && apt-get install -y git git-lfs && rm -rf /var/lib/apt/lists/*
+
+# Initialize git-lfs
+RUN git lfs install
+
+
 
 # Copy both requirements.txt AND constraints.txt
 COPY requirements.txt constraints.txt ./
