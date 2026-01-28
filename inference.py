@@ -12,6 +12,12 @@ from simpletuner.helpers.models.flux2.transformer import Flux2Transformer2DModel
 from simpletuner.helpers.models.flux2.autoencoder import AutoencoderKLFlux2
 from simpletuner.helpers.models.flux2.pipeline import Flux2Pipeline
 
+
+print("DEBUG - Environment variables:")
+print(f"HF_TOKEN: {os.environ.get('HF_TOKEN', 'NOT SET')}")
+print(f"HUGGING_FACE_HUB_TOKEN: {os.environ.get('HUGGING_FACE_HUB_TOKEN', 'NOT SET')}")
+print(f"All env vars: {list(os.environ.keys())}")
+
 # Get HF token from environment
 hf_token = os.environ.get("HF_TOKEN") or os.environ.get("HUGGING_FACE_HUB_TOKEN")
 if not hf_token:
