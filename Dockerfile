@@ -2,24 +2,23 @@ FROM pytorch/pytorch:2.5.1-cuda12.4-cudnn9-runtime
 
 WORKDIR /app
 
-# Install system dependencies
+# Install git
 RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# Clone and install SimpleTuner FIRST (establishes baseline dependencies)
+RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
+    pip install --no-cache-dir /tmp/SimpleTuner && \
+    rm -rf /tmp/SimpleTuner
+
+# Then install additional requirements (if any are still needed)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Clone SimpleTuner but DON'T install it - just copy the needed modules
-RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
-    mkdir -p /app/simpletuner && \
-    cp -r /tmp/SimpleTuner/helpers /app/simpletuner/ && \
-    touch /app/simpletuner/__init__.py && \
-    rm -rf /tmp/SimpleTuner
-
-# Copy application files
+# Copy application code
 COPY . .
 
-# Download models during build
+# Download models at build time
 RUN python download_models.py
 
+# Start the RunPod handler
 CMD ["python", "-u", "runpod_handler.py"]
