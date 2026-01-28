@@ -15,8 +15,8 @@ RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
     pip install --no-cache-dir -e ".[cuda]" && \
     rm -rf /tmp/SimpleTuner/.git
 
-# HuggingFace login
-ENV HF_TOKEN=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
+# HuggingFace login (token passed as build arg)
+ARG HF_TOKEN
 RUN pip install --no-cache-dir huggingface-hub && \
     huggingface-cli login --token ${HF_TOKEN}
 
