@@ -136,9 +136,11 @@ def load_models():
         transformer=transformer,
         scheduler=scheduler,
     )
-    pipeline.enable_model_cpu_offload()
-    print("Pipeline created with CPU offloading enabled")
-
+    
+    # Don't use CPU offload - keep transformer on GPU
+    # Text encoder stays on CPU (quantized), transformer on GPU
+    print("Pipeline created (no CPU offload - text encoder on CPU, transformer on GPU)")
+    
     # ADD THIS:
     print(f"Text encoder device: {text_encoder.device}")
     print(f"Transformer device: {transformer.device}")
