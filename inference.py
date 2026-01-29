@@ -1,3 +1,8 @@
+# SET THESE BEFORE ANY OTHER IMPORTS
+os.environ['HF_HOME'] = '/runpod-volume'
+os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
+os.environ['HF_HUB_CACHE'] = '/runpod-volume'
+
 import torch
 from transformers import AutoProcessor, Mistral3ForConditionalGeneration
 from diffusers import FlowMatchEulerDiscreteScheduler
@@ -5,9 +10,7 @@ from optimum.quanto import freeze, qint8, quantize
 import os
 from huggingface_hub import hf_hub_download
 
-# Set cache to network volume FIRST
-os.environ['HF_HOME'] = '/runpod-volume'
-os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
+
 
 # Add /app to path
 import sys
