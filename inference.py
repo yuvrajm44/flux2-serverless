@@ -137,9 +137,8 @@ def load_models():
         scheduler=scheduler,
     )
     
-    # Don't use CPU offload - keep transformer on GPU
-    # Text encoder stays on CPU (quantized), transformer on GPU
-    print("Pipeline created (no CPU offload - text encoder on CPU, transformer on GPU)")
+    pipeline.enable_model_cpu_offload()  
+    print("Pipeline created with CPU offloading enabled")
     
     # ADD THIS:
     print(f"Text encoder device: {text_encoder.device}")
@@ -170,9 +169,9 @@ def generate_image(prompt, reference_images, num_steps, guidance_scale, width, h
         width=width,
         num_inference_steps=num_steps,
         guidance_scale=guidance_scale,
-        generator=torch.Generator(device="cpu").manual_seed(seed),  # ← Use CPU
+        generator=generator,
     )
-    
+        
     # Get the result
     result_image = output.images[0]
     
