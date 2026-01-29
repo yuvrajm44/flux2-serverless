@@ -161,6 +161,8 @@ def generate_image(prompt, reference_images, num_steps, guidance_scale, width, h
     """Generate image using loaded pipeline"""
     pipeline, device = load_models()
 
+    print(f"💾 RAM before inference: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
+    
     generator = torch.Generator(device=device).manual_seed(seed)
     
     # Let pipeline handle generator creation based on model devices
@@ -173,7 +175,8 @@ def generate_image(prompt, reference_images, num_steps, guidance_scale, width, h
         guidance_scale=guidance_scale,
         generator=generator,
     )
-        
+
+    print(f"💾 RAM after inference: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
     # Get the result
     result_image = output.images[0]
     
