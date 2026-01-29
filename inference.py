@@ -1,6 +1,7 @@
 import os
 import sys
 import psutil
+import gc
 # SET THESE BEFORE ANY OTHER IMPORTS
 os.environ['HF_HOME'] = '/runpod-volume'
 os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
@@ -105,7 +106,12 @@ def load_models():
     text_encoder.to(torch.device("cpu"), dtype=dtype)
     print("Text encoder loaded and quantized on CPU")
     print(f"💾 RAM after quantization: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
-    
+
+  
+    gc.collect()
+    torch.cuda.empty_cache()
+    print(f"💾 RAM after cleanup: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
+        
     # Load transformer
     print("Loading transformer...")
     transformer = Flux2Transformer2DModel.from_pretrained(
