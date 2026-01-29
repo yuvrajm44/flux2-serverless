@@ -5,7 +5,11 @@ from optimum.quanto import freeze, qint8, quantize
 import os
 from huggingface_hub import hf_hub_download
 
-# Add /app to path FIRST
+# Set cache to network volume FIRST
+os.environ['HF_HOME'] = '/runpod-volume'
+os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
+
+# Add /app to path
 import sys
 sys.path.insert(0, '/app')
 
@@ -41,6 +45,16 @@ def load_models():
     
     model_path = "black-forest-labs/FLUX.2-dev"
     mistral_path = "mistralai/Mistral-Small-3.1-24B-Instruct-2503"
+    
+    # Check if models already cached in network volume
+    flux_cached = os.path.exists("/runpod-volume/models--black-forest-labs--FLUX.2-dev")
+    mistral_cached = os.path.exists("/runpod-volume/models--mistralai--Mistral-Small-3.1-24B-Instruct-2503")
+    
+    if flux_cached and mistral_cached:
+        print("✅ Models found in network volume - using cached versions")
+    else:
+        print("📥 Models not found in network volume - downloading (first run only)")
+    
     print("Downloading LoRA from HuggingFace...")
     lora_path = hf_hub_download(
         repo_id="michealscott/flux2-3030",
