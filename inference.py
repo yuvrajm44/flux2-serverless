@@ -171,8 +171,15 @@ def generate_image(prompt, reference_images, num_steps, guidance_scale, width, h
         guidance_scale=guidance_scale,
         generator=generator,
     )
+     # Get the result
+    result_image = output.images[0]
     
-    return output.images[0]
+    # Free pipeline output immediately
+    del output
+    gc.collect()
+    torch.cuda.empty_cache()
+    
+    return result_image
 
 # Pre-load models at import time
 print("Pre-loading models at startup...")
