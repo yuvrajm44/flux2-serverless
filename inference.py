@@ -13,6 +13,21 @@ os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
 import sys
 sys.path.insert(0, '/app')
 
+# CHECK NETWORK VOLUME MOUNT
+if os.path.exists('/runpod-volume'):
+    print("✅ Network volume detected at /runpod-volume")
+    try:
+        # Test write access
+        test_file = '/runpod-volume/.test_write'
+        with open(test_file, 'w') as f:
+            f.write('test')
+        os.remove(test_file)
+        print("✅ Network volume is writable")
+    except Exception as e:
+        print(f"❌ Network volume exists but not writable: {e}")
+else:
+    print("❌ WARNING: Network volume NOT mounted at /runpod-volume - models will download to temp storage!")
+
 from simpletuner.helpers.models.flux2.transformer import Flux2Transformer2DModel
 from simpletuner.helpers.models.flux2.autoencoder import AutoencoderKLFlux2
 from simpletuner.helpers.models.flux2.pipeline import Flux2Pipeline
