@@ -14,11 +14,13 @@ def download_image(url):
 def handler(event):
     """RunPod serverless handler"""
     try:
+        import gc
+        
         input_data = event["input"]
         
         # Get inputs
         prompt = input_data["prompt"]
-        reference_urls = input_data["reference_images"]  # List of URLs
+        reference_urls = input_data["reference_images"]
         num_steps = input_data.get("num_steps", 20)
         guidance_scale = input_data.get("guidance_scale", 3.5)
         width = input_data.get("width", 1024)
@@ -39,17 +41,25 @@ def handler(event):
             seed=seed
         )
         
-        # Convert to base64
+        # FREE reference images immediately - don't need them anymore
+        del reference_images
+        gc.collect()
+        
+        # Convert to JPEG (smaller than PNG)
         buffered = io.BytesIO()
-        output_image.save(buffered, format="PNG")
-        img_base64 = base64.b64encode(buffered.getvalue()).decode()
+        output_image.save(buffered, format="JPEG", quality=95)
+        buffered.seek(0)
+        img_base64 = base64.b64encode(buffered.read()).decode()
+        
+        # FREE output image and buffer
+        del buffered
+        del output_image
+        gc.collect()
         
         return {
-            "image": f"data:image/png;base64,{img_base64}",
+            "image": f"data:image/jpeg;base64,{img_base64}",
             "status": "success"
         }
         
     except Exception as e:
         return {"error": str(e), "status": "failed"}
-
-runpod.serverless.start({"handler": handler})
