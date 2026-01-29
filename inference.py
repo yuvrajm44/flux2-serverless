@@ -160,6 +160,8 @@ def load_models():
 def generate_image(prompt, reference_images, num_steps, guidance_scale, width, height, seed):
     """Generate image using loaded pipeline"""
     pipeline, device = load_models()
+
+    generator = torch.Generator(device=device).manual_seed(seed)
     
     # Let pipeline handle generator creation based on model devices
     output = pipeline(
