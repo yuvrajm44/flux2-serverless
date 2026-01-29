@@ -162,8 +162,7 @@ def generate_image(prompt, reference_images, num_steps, guidance_scale, width, h
     """Generate image using loaded pipeline"""
     pipeline, device = load_models()
     
-    generator = torch.Generator(device=device).manual_seed(seed)
-    
+    # Let pipeline handle generator creation based on model devices
     output = pipeline(
         prompt=prompt,
         image=reference_images,
@@ -171,9 +170,10 @@ def generate_image(prompt, reference_images, num_steps, guidance_scale, width, h
         width=width,
         num_inference_steps=num_steps,
         guidance_scale=guidance_scale,
-        generator=generator,
+        generator=torch.Generator(device="cpu").manual_seed(seed),  # ← Use CPU
     )
-     # Get the result
+    
+    # Get the result
     result_image = output.images[0]
     
     # Free pipeline output immediately
