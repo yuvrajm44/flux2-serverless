@@ -63,3 +63,5 @@ def handler(event):
         
     except Exception as e:
         return {"error": str(e), "status": "failed"}
+
+runpod.serverless.start({"handler": handler})
