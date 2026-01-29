@@ -88,6 +88,8 @@ def load_models():
     )
     vae.to(DEVICE)
     print(f"VAE loaded to {DEVICE}")
+    print(f"💾 RAM after VAE: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
+    
     
     # Load and quantize text encoder on CPU
     print("Loading text encoder...")
@@ -95,11 +97,14 @@ def load_models():
     text_encoder = Mistral3ForConditionalGeneration.from_pretrained(
         mistral_path, torch_dtype=dtype, low_cpu_mem_usage=True, token=hf_token
     )
+    print(f"💾 RAM after text encoder load: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
+    
     print("Quantizing text encoder...")
     quantize(text_encoder, weights=qint8)
     freeze(text_encoder)
     text_encoder.to(torch.device("cpu"), dtype=dtype)
     print("Text encoder loaded and quantized on CPU")
+    print(f"💾 RAM after quantization: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
     
     # Load transformer
     print("Loading transformer...")
@@ -108,7 +113,7 @@ def load_models():
     )
     transformer.to(DEVICE)
     print(f"Transformer loaded to {DEVICE}")
-    
+    print(f"💾 RAM after transformer: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
     # Load scheduler
     print("Loading scheduler...")
     scheduler = FlowMatchEulerDiscreteScheduler.from_pretrained(
