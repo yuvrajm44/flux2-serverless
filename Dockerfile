@@ -18,8 +18,6 @@ RUN pip install --no-cache-dir -c constraints.txt -r requirements.txt
 
 
 
-# VERIFY transformers
-RUN python -c "import transformers; print('Transformers:', transformers.__version__); from transformers import AutoProcessor; print('✓ AutoProcessor imported successfully')"
 
 # Copy SimpleTuner code (DON'T pip install - avoids skrample dependency)
 RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
@@ -31,5 +29,9 @@ COPY . .
 
 # Download models at build time
 #RUN python download_models.py
+
+# NOW verify after everything is in place
+RUN python -c "import transformers; print('Transformers:', transformers.__version__); from transformers import AutoProcessor; print('✓ AutoProcessor imported successfully')"
+
 
 CMD ["python", "-u", "runpod_handler.py"]
