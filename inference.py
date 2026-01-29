@@ -5,6 +5,7 @@ import sys
 os.environ['HF_HOME'] = '/runpod-volume'
 os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
 os.environ['HF_HUB_CACHE'] = '/runpod-volume'
+os.environ['HF_HUB_DOWNLOAD_TIMEOUT'] = '600' 
 
 # Add /app to path
 sys.path.insert(0, '/app')
