@@ -1,26 +1,18 @@
+import os
+import sys
+
 # SET THESE BEFORE ANY OTHER IMPORTS
 os.environ['HF_HOME'] = '/runpod-volume'
 os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
 os.environ['HF_HUB_CACHE'] = '/runpod-volume'
 
-import torch
-from transformers import AutoProcessor, Mistral3ForConditionalGeneration
-from diffusers import FlowMatchEulerDiscreteScheduler
-from optimum.quanto import freeze, qint8, quantize
-import os
-from huggingface_hub import hf_hub_download
-
-
-
 # Add /app to path
-import sys
 sys.path.insert(0, '/app')
 
 # CHECK NETWORK VOLUME MOUNT
 if os.path.exists('/runpod-volume'):
     print("✅ Network volume detected at /runpod-volume")
     try:
-        # Test write access
         test_file = '/runpod-volume/.test_write'
         with open(test_file, 'w') as f:
             f.write('test')
@@ -29,7 +21,14 @@ if os.path.exists('/runpod-volume'):
     except Exception as e:
         print(f"❌ Network volume exists but not writable: {e}")
 else:
-    print("❌ WARNING: Network volume NOT mounted at /runpod-volume - models will download to temp storage!")
+    print("❌ WARNING: Network volume NOT mounted")
+
+# NOW import everything else
+import torch
+from transformers import AutoProcessor, Mistral3ForConditionalGeneration
+from diffusers import FlowMatchEulerDiscreteScheduler
+from optimum.quanto import freeze, qint8, quantize
+from huggingface_hub import hf_hub_download
 
 from simpletuner.helpers.models.flux2.transformer import Flux2Transformer2DModel
 from simpletuner.helpers.models.flux2.autoencoder import AutoencoderKLFlux2
