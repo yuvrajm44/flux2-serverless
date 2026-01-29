@@ -16,7 +16,7 @@ COPY requirements.txt constraints.txt ./
 # Install with constraints to lock torch/torchvision versions
 RUN pip install --no-cache-dir -c constraints.txt -r requirements.txt
 
-RUN pip install --force-reinstall accelerate --break-system-packages
+
 
 # VERIFY transformers
 RUN python -c "import transformers; print('Transformers:', transformers.__version__); from transformers import AutoProcessor; print('✓ AutoProcessor imported successfully')"
