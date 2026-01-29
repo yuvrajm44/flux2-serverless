@@ -1,6 +1,6 @@
 import os
 import sys
-
+import psutil
 # SET THESE BEFORE ANY OTHER IMPORTS
 os.environ['HF_HOME'] = '/runpod-volume'
 os.environ['TRANSFORMERS_CACHE'] = '/runpod-volume'
@@ -127,6 +127,14 @@ def load_models():
     )
     pipeline.enable_model_cpu_offload()
     print("Pipeline created with CPU offloading enabled")
+
+    # ADD THIS:
+    print(f"Text encoder device: {text_encoder.device}")
+    print(f"Transformer device: {transformer.device}")
+    print(f"VAE device: {vae.device}")
+    
+
+    print(f"RAM usage: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
     
     # Load LoRA
     print(f"Loading LoRA from {lora_path}...")
