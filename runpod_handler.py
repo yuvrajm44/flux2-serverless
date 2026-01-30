@@ -17,6 +17,9 @@ def handler(event):
     try:
         input_data = event["input"]
         request_id = event.get("id", "unknown")
+
+        print(f"🔵 === HANDLER CALLED === Request ID: {request_id}")
+        print(f"🔵 Event: {event}")
         
         # Get inputs
         prompt = input_data["prompt"]
@@ -55,7 +58,8 @@ def handler(event):
         # FREE output image immediately after saving
         del output_image
         gc.collect()
-        
+
+        print(f"✅ === HANDLER RETURNING === Request ID: {request_id}")
         return {
             "image_path": output_path,
             "status": "success"
