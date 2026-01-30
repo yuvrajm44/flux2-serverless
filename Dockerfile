@@ -18,6 +18,9 @@ RUN apt-get update && apt-get install -y \
 # Initialize git-lfs
 RUN git lfs install
 
+
+
+
 # Make python3.13 the default
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.13 1
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
