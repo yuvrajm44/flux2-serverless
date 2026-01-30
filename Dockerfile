@@ -2,7 +2,7 @@ FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 
 WORKDIR /app
 
-# Install Python 3.11 (or 3.10) and essential tools
+# Install Python 3.11 and essential tools
 RUN apt-get update && apt-get install -y \
     python3.11 \
     python3-pip \
@@ -17,16 +17,20 @@ RUN git lfs install
 RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
 RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 
-# Copy requirements and constraints
-COPY requirements.txt constraints.txt ./
+# Upgrade pip
+RUN pip install --upgrade pip
 
-# Install packages with constraints
-RUN pip install --no-cache-dir -c constraints.txt -r requirements.txt
-
-# Copy SimpleTuner code
+# Clone SimpleTuner and install with CUDA support
 RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner && \
+    cd /tmp/SimpleTuner && \
+    pip install -e ".[cuda]" && \
     cp -r /tmp/SimpleTuner/simpletuner /app/ && \
+    cd /app && \
     rm -rf /tmp/SimpleTuner
+
+# Install additional requirements
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy application code
 COPY . .
