@@ -6,16 +6,15 @@ ENV TZ=UTC
 
 WORKDIR /app
 
-# Install Python 3.13 and essential tools
+# Install Python 3.12 and essential tools
 RUN apt-get update && apt-get install -y \
     software-properties-common \
     && add-apt-repository ppa:deadsnakes/ppa \
     && apt-get update && apt-get install -y \
-    python3.13 \
-    python3.13-venv \
-    python3.13-dev \
-    python3.13-distutils \
-    python3-pip \
+    python3.12 \
+    python3.12-venv \
+    python3.12-dev \
+    curl \
     git \
     git-lfs \
     && rm -rf /var/lib/apt/lists/*
@@ -23,15 +22,12 @@ RUN apt-get update && apt-get install -y \
 # Initialize git-lfs
 RUN git lfs install
 
+# Make python3.12 the default
+RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.12 1
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1
 
-
-
-# Make python3.13 the default
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.13 1
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.13 1
-
-# Upgrade pip
-RUN python3.13 -m pip install --upgrade pip
+# Install pip for Python 3.12 using get-pip.py
+RUN curl -sS https://bootstrap.pypa.io/get-pip.py | python3.12
 
 # Clone SimpleTuner
 RUN git clone https://github.com/bghira/SimpleTuner.git /tmp/SimpleTuner
