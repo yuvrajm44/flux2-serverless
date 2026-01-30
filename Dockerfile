@@ -1,5 +1,9 @@
 FROM nvidia/cuda:12.4.0-runtime-ubuntu22.04
 
+# Set timezone non-interactively
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
 WORKDIR /app
 
 # Install Python 3.13 and essential tools
