@@ -85,9 +85,9 @@ def load_models():
     # Load VAE
     print("Loading VAE...")
     vae = AutoencoderKLFlux2.from_pretrained(
-        model_path, subfolder="vae", torch_dtype=dtype, token=hf_token
+        model_path, subfolder="vae", torch_dtype=dtype, token=hf_token,
+        device_map="cuda"
     )
-    vae.to(DEVICE)
     print(f"VAE loaded to {DEVICE}")
     print(f"💾 RAM after VAE: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
     
@@ -103,8 +103,7 @@ def load_models():
     print("Quantizing text encoder...")
     quantize(text_encoder, weights=qint8)
     freeze(text_encoder)
-    text_encoder.to(torch.device("cpu"), dtype=dtype)
-    print("Text encoder loaded and quantized on CPU")
+    print("✅ Text encoder loaded and quantized on CPU (waiting to move to GPU)")
     print(f"💾 RAM after quantization: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
 
   
@@ -115,9 +114,32 @@ def load_models():
     # Load transformer
     print("Loading transformer...")
     transformer = Flux2Transformer2DModel.from_pretrained(
-        model_path, subfolder="transformer", torch_dtype=dtype, token=hf_token
+        model_path, subfolder="transformer", torch_dtype=dtype, token=hf_token,
+        device_map="cuda"
     )
-    transformer.to(DEVICE)
+    print("Quantizing transformer to int8 on GPU...")
+    quantize(transformer, weights=qint8)
+    freeze(transformer)
+    print("✅ Transformer quantized to int8 on GPU")
+    
+    # ⭐ ADD THIS SAFETY CHECK ⭐
+    gc.collect()
+    torch.cuda.empty_cache()
+    current_vram = torch.cuda.memory_allocated() / 1024**3
+    print(f"💾 VRAM after transformer quantization: {current_vram:.2f} GB")
+
+    # 3. NOW move Text Encoder to GPU (only if transformer is safely quantized)
+    print("Moving text encoder to GPU...")
+    text_encoder.to(torch.device("cuda"), dtype=dtype)
+    print("✅ Text encoder moved to GPU")
+
+    # Final VRAM check
+    final_vram = torch.cuda.memory_allocated() / 1024**3
+    print(f"💾 Final VRAM usage: {final_vram:.2f} GB")
+
+    gc.collect()
+    torch.cuda.empty_cache()
+
     print(f"Transformer loaded to {DEVICE}")
     print(f"💾 RAM after transformer: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
     # Load scheduler
@@ -137,8 +159,8 @@ def load_models():
         scheduler=scheduler,
     )
     
-    pipeline.enable_model_cpu_offload()  
-    print("Pipeline created with CPU offloading enabled")
+    # pipeline.enable_model_cpu_offload()  
+    print("Pipeline created (CPU offloading disabled)")
     
     # ADD THIS:
     print(f"Text encoder device: {text_encoder.device}")
@@ -163,7 +185,7 @@ def generate_image(prompt, reference_images, num_steps, guidance_scale, width, h
 
     print(f"💾 RAM before inference: {psutil.Process().memory_info().rss / 1024**3:.2f} GB")
     
-    generator = torch.Generator(device=device).manual_seed(seed)
+    generator = torch.Generator(device="cpu").manual_seed(seed)
     
     # Let pipeline handle generator creation based on model devices
     output = pipeline(
